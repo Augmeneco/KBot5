@@ -1,4 +1,4 @@
-import requests, json, sqlite3, os, sys, psutil, threading, re, time, random, datetime, untangle
+import requests, json, sqlite3, os, sys, psutil, threading, re, time, random, datetime, untangle, subprocess
 from lxml import html
 from lxml import etree
 from bs4 import BeautifulSoup
@@ -7,6 +7,7 @@ sys.path.append('plugins')
 config = json.loads(open('config/bot.cfg','r').read())
 cmds = json.loads(open('config/cmds.cfg','r').read())
 commands = {}
+users_db = sqlite3.connect('data/users.db')
 token = config['group_token']
 def apisay(text,toho,attachment=None,keyboard={"buttons":[],"one_time":True}):
 	return requests.post('https://api.vk.com/method/messages.send',data={'access_token':token,'v':'5.80','peer_id':toho,'message':text,'attachment':attachment,'keyboard':json.dumps(keyboard,ensure_ascii=False)}).json()
@@ -68,5 +69,32 @@ while True:
 			pack['user_text'] = user_text
 			pack['text_split'] = text_split
 			lastmsgid = msgid
+			users_db_tmp = users_db.cursor().execute('SELECT * FROM users WHERE id = '+str(userid)).fetchall()
+			
+			if len(users_db_tmp) != 0:
+				user_mode = users_db_tmp[0][1]
+			else: user_mode = 1
+				
 			if text_split[1] in cmds:
-				threading.Thread(target=do_cmd,args=(commands[cmds[text_split[1]][0]][cmds[text_split[1]][1]],pack)).start()
+				if cmds[text_split[1]][0] == 'admin' and user_mode == 3:
+					threading.Thread(target=do_cmd,args=(commands['admin'][cmds[text_split[1]][1]],pack)).start()
+					continue
+				elif cmds[text_split[1]][0] == 'admin' and user_mode != 3:
+					apisay('Пшол вон из админки',toho)
+					continue
+				if cmds[text_split[1]][0] == 'vip' and (user_mode == 3 or user_mode == 2):
+					threading.Thread(target=do_cmd,args=(commands['vip'][cmds[text_split[1]][1]],pack)).start()
+					continue
+				elif cmds[text_split[1]][0] == 'admin' and (user_mode != 3 or user_mode != 2):
+					apisay('У вас нет доступа к вип командам',toho)
+					continue
+				if user_mode == 0:
+					apisay('Вам бан',toho)
+					continue
+				if user_mode > 0:
+					threading.Thread(target=do_cmd,args=(commands['default'][cmds[text_split[1]][1]],pack)).start()		
+					continue			
+			else:
+				speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
+				if 'text' in speak: apisay(speak['text'],toho)
+				else: apisay('Команда не найдена :(', toho)
