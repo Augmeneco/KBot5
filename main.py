@@ -1,4 +1,7 @@
 import requests, json, sqlite3, os, sys, psutil, threading, re, time, random, datetime, untangle
+from lxml import html
+from lxml import etree
+from bs4 import BeautifulSoup
 sys.path.append('plugins')
 
 config = json.loads(open('config/bot.cfg','r').read())
