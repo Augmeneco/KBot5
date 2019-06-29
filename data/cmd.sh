@@ -1,1 +1,1 @@
-screenfetch -Nn
+sudo pmap 30438
