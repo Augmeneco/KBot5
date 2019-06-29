@@ -100,9 +100,8 @@ while True:
 					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
 					if 'text' in speak: apisay(speak['text'],toho)
 					else: apisay('Команда не найдена :(', toho)
-	except:
-		except Exception as error:
-			if error == KeyboardInterrupt:
-							sys.exit(0)
-			print(error)
-			continue
+	except Exception as error:
+		if error == KeyboardInterrupt:
+						sys.exit(0)
+		print(error)
+		continue
