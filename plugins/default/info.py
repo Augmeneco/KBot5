@@ -1,1 +1,1 @@
-apisay('Вероятность этого равна '+str(random.randint(0,146))+'%',toho)
+apisay('Вероятность того, что '+pack['user_text']+' равна '+str(random.randint(0,146))+'%',pack['toho'])
