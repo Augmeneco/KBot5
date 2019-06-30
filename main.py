@@ -36,7 +36,7 @@ for path in os.listdir('plugins'):
 start_time = time.monotonic()	
 longpoll = {}
 while True:
-	try:
+	if True:
 		active = False
 		try:
 			response = requests.post(lpb['server']+'?act=a_check&key='+lpb['key']+'&ts='+str(ts)+'&wait=25').json()
@@ -58,7 +58,7 @@ while True:
 			if '@kbot5' in text:
 				text = re.sub('\[club\d*\|@kbot5\]','@kbot5',text)
 			text_split = text.split(' ')
-			if text_split[0].lower() in config['names']:
+			if text_split[0].lower() in config['names'] and len(text_split) >= 2:
 				active = True
 			if payload == '{"command":"start"}':
 				active = True
@@ -109,8 +109,8 @@ while True:
 					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
 					if 'text' in speak: apisay(speak['text'],toho)
 					else: apisay('Команда не найдена :(', toho)
-	except Exception as error:
+	'''except Exception as error:
 		if error == KeyboardInterrupt:
 			sys.exit(0)
 		print(error)
-		continue
+		continue'''
