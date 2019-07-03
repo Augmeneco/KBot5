@@ -1,4 +1,3 @@
-from PIL import Image
 longpoll[pack['userid']]=result
 
 if 'photo' in longpoll[pack['userid']]['object']['attachments'][0]:
@@ -25,3 +24,7 @@ if 'photo' in longpoll[pack['userid']]['object']['attachments'][0]:
 		image_obj.paste(image2,(int(image_obj.size[0]/2),0))
 		image_obj.save(imgByteArr,format='PNG')
 		sendpic(imgByteArr.getvalue(),'',pack['toho'])
+else:
+	apisay('Картинку забыл сунуть',pack['toho'])
+image_obj.close()
+image2.close()

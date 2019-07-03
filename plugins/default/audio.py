@@ -1,4 +1,8 @@
-param = {'v':'5.90','q':pack['user_text'],'count':'30','sort':2,'access_token':config['user_token']}
+param = {'v':'5.90','q':pack['user_text'],'count':'0','sort':2,'access_token':config['user_token']}
+count = requests.post('https://api.vk.com/method/audio.search', data=param).json()['response']['count']
+if count > 10: count = count-10
+if count < 11: count = 0
+param = {'v':'5.90','q':pack['user_text'],'offset':random.randint(0,count),'count':'10','sort':2,'access_token':config['user_token']}
 items = requests.post('https://api.vk.com/method/audio.search', data=param).json()['response']['items']
 
 attachment = ''

@@ -3,7 +3,8 @@ from lxml import html
 from lxml import etree
 from bs4 import BeautifulSoup
 from io import BytesIO
-sys.path.append('plugins')
+from PIL import Image
+from colorama import Fore, Back, Style
 
 config = json.loads(open('config/bot.cfg','r').read())
 cmds = json.loads(open('config/cmds.cfg','r').read())
@@ -43,7 +44,7 @@ while True:
 			ts = response['ts']
 		except Exception as error:	
 			if error == KeyboardInterrupt:
-				sys.exit(0)
+				os._exit(0)
 			lpb = requests.post('https://api.vk.com/method/groups.getLongPollServer',data={'access_token':config['group_token'],'v':'5.80','group_id':config['group_id']}).json()['response']
 			ts = lpb['ts']
 			continue
@@ -53,6 +54,8 @@ while True:
 			text = result['object']['text']
 			payload = None
 			msgid = result['object']['conversation_message_id']
+			
+			
 			if 'payload' in result['object']:
 				payload = result['object']['payload']
 			if '@kbot5' in text:
@@ -64,9 +67,12 @@ while True:
 				active = True
 				text = '@kbot5 помощь'
 				text_split = text.split(' ')
-			if len(text_split) > 2: user_text = text.replace(re.findall('\S* \S* ',text)[0],'')
+			if len(text_split) > 2: 
+				user_replace_text = re.findall('\S* \S* ',text)
+				if len(user_replace_text) != 0:
+					user_text = text.replace(user_replace_text[0],'')
 			else: user_text = ''
-			if text == 'F' and result['object']['from_id'] > 0: apisay('F',result['object']['peer_id'])
+			if text.lower() == 'f' and result['object']['from_id'] > 0: apisay('F',result['object']['peer_id'])
 			
 			if active:
 				toho = result['object']['peer_id']
@@ -79,13 +85,17 @@ while True:
 				pack['msgid'] = msgid
 				pack['user_text'] = user_text
 				pack['text_split'] = text_split
+				
+				print(datetime.datetime.today().strftime("%H:%M:%S")+' | ['+Fore.GREEN+'+'+Style.RESET_ALL+'] Упоминание Кбота в '+str(pack['toho'])+' с текстом '+pack['text'])
+				
 				lastmsgid = msgid
 				users_db_tmp = users_db.cursor().execute('SELECT * FROM users WHERE id = '+str(userid)).fetchall()
 				
 				if len(users_db_tmp) != 0:
 					user_mode = users_db_tmp[0][1]
 				else: user_mode = 1
-					
+				if len(text_split) < 2: continue
+				text_split[1] = text_split[1].lower()
 				if text_split[1] in cmds:
 					if cmds[text_split[1]][0] == 'admin' and user_mode == 3:
 						threading.Thread(target=do_cmd,args=(commands['admin'][cmds[text_split[1]][1]],pack)).start()
