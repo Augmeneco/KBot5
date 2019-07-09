@@ -12,7 +12,10 @@ commands = {}
 users_db = sqlite3.connect('data/users.db')
 token = config['group_token']
 def apisay(text,toho,attachment=None,keyboard={"buttons":[],"one_time":True}):
-	requests.post('https://api.vk.com/method/messages.send',data={'access_token':token,'v':'5.80','peer_id':toho,'message':text,'attachment':attachment,'keyboard':json.dumps(keyboard,ensure_ascii=False)}).json()
+	try:
+		requests.post('https://api.vk.com/method/messages.send',data={'access_token':token,'v':'5.80','peer_id':toho,'message':text,'attachment':attachment,'keyboard':json.dumps(keyboard,ensure_ascii=False)}).json()
+	except:
+		print(datetime.datetime.today().strftime("%H:%M:%S")+' | ['+Fore.RED+'+'+Style.RESET_ALL+'] Ошибка отправки сообщения в '+str(pack['toho']))
 def sendpic(pic,mess,toho,keyboard={"buttons":[],"one_time":True}):
 	try:
 		ret = requests.get('https://api.vk.com/method/photos.getMessagesUploadServer?access_token={access_token}&v=5.68'.format(access_token=token)).json()
@@ -24,6 +27,7 @@ def sendpic(pic,mess,toho,keyboard={"buttons":[],"one_time":True}):
 		ret = requests.get('https://api.vk.com/method/photos.saveMessagesPhoto?v=5.68&album_id=-3&server='+str(ret['server'])+'&photo='+ret['photo']+'&hash='+str(ret['hash'])+'&access_token='+token).json()
 		requests.post('https://api.vk.com/method/messages.send',data={'attachment':'photo'+str(ret['response'][0]['owner_id'])+'_'+str(ret['response'][0]['id']),'message':mess,'v':'5.80','peer_id':str(toho),'access_token':str(token),'keyboard':json.dumps(keyboard)})
 	except KeyError:
+		print(datetime.datetime.today().strftime("%H:%M:%S")+' | ['+Fore.RED+'+'+Style.RESET_ALL+'] Ошибка отправки сообщения в '+str(pack['toho']))
 		apisay('Что-то пошло не так :(',toho)
 def do_cmd(code,pack):
 	exec(code)
@@ -34,6 +38,7 @@ for path in os.listdir('plugins'):
 		for plugin in os.listdir('plugins/'+path):
 			commands[path][plugin] = open('plugins/'+path+'/'+plugin,'r').read()
 
+uses_kb = 0
 start_time = time.monotonic()	
 longpoll = {}
 while True:
@@ -45,7 +50,13 @@ while True:
 		except Exception as error:	
 			if error == KeyboardInterrupt:
 				os._exit(0)
-			lpb = requests.post('https://api.vk.com/method/groups.getLongPollServer',data={'access_token':config['group_token'],'v':'5.80','group_id':config['group_id']}).json()['response']
+			try:
+				lpb = requests.post('https://api.vk.com/method/groups.getLongPollServer',data={'access_token':config['group_token'],'v':'5.80','group_id':config['group_id']}).json()['response']
+			except Exception as error:	
+				if error == KeyboardInterrupt:
+					os._exit(0)
+				continue
+				
 			ts = lpb['ts']
 			continue
 
@@ -87,6 +98,7 @@ while True:
 				pack['text_split'] = text_split
 				
 				print(datetime.datetime.today().strftime("%H:%M:%S")+' | ['+Fore.GREEN+'+'+Style.RESET_ALL+'] Упоминание Кбота в '+str(pack['toho'])+' с текстом '+pack['text'])
+				uses_kb += 1
 				
 				lastmsgid = msgid
 				users_db_tmp = users_db.cursor().execute('SELECT * FROM users WHERE id = '+str(userid)).fetchall()
@@ -116,6 +128,8 @@ while True:
 						threading.Thread(target=do_cmd,args=(commands['default'][cmds[text_split[1]][1]],pack)).start()		
 						continue			
 				else:
+					if text_split[1] in ['поиск','библиотека','читать с начала','читать с указанной главы','удалить мангу','выход']:
+						continue 
 					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
 					if 'text' in speak: apisay(speak['text'],toho)
 					else: apisay('Команда не найдена :(', toho)
