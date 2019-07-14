@@ -1,5 +1,5 @@
 if 'photo' in longpoll[pack['userid']]['object']['attachments'][0]:
-	apisay('Делаю картинку... это может занять до 20 секунд',pack['toho'])
+	apisay('Жмыхаю картинку... создание шок контента может занять до 20 секунд',pack['toho'])
 	ret = longpoll[pack['userid']]['object']['attachments'][0]['photo']['sizes']
 	num = 0
 	for size in ret:

@@ -83,7 +83,7 @@ while True:
 				if len(user_replace_text) != 0:
 					user_text = text.replace(user_replace_text[0],'')
 			else: user_text = ''
-			if text.lower() == 'f' and result['object']['from_id'] > 0: apisay('F',result['object']['peer_id'])
+			if text.lower() == 'f' and result['object']['from_id'] > 0: apisay('F',result['object']['peer_id'],attachment='photo-158856938_457255856')
 			
 			if active:
 				toho = result['object']['peer_id']
