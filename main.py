@@ -130,7 +130,7 @@ while True:
 				else:
 					if text_split[1] in ['поиск','библиотека','читать с начала','читать с указанной главы','удалить мангу','выход','34gif','34pic']:
 						continue 
-					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
+					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':text.replace(text.split(' ')[0],'')}).json()
 					if 'text' in speak: apisay(speak['text'],toho)
 					else: apisay('Команда не найдена :(', toho)
 	'''except Exception as error:
