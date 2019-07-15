@@ -1,9 +1,9 @@
-import requests, json, sqlite3, os, sys, psutil, threading, re, time, random, datetime, untangle, subprocess
+import requests, json, sqlite3, os, sys, psutil, threading, re, time, random, datetime, untangle, subprocess, textwrap
 from lxml import html
 from lxml import etree
 from bs4 import BeautifulSoup
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from colorama import Fore, Back, Style
 
 config = json.loads(open('config/bot.cfg','r').read())
@@ -128,7 +128,7 @@ while True:
 						threading.Thread(target=do_cmd,args=(commands['default'][cmds[text_split[1]][1]],pack)).start()		
 						continue			
 				else:
-					if text_split[1] in ['поиск','библиотека','читать с начала','читать с указанной главы','удалить мангу','выход']:
+					if text_split[1] in ['поиск','библиотека','читать с начала','читать с указанной главы','удалить мангу','выход','34gif','34pic']:
 						continue 
 					speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':user_text}).json()
 					if 'text' in speak: apisay(speak['text'],toho)
