@@ -11,13 +11,15 @@ if 'photo' in longpoll[pack['userid']]['object']['attachments'][0]:
 	size = img_size.size
 	img_size.close()
 	
-	open('/tmp/'+str(pack['userid'])+'.jpg','wb').write(ret)
-	os.system('convert /tmp/'+str(pack['userid'])+'.jpg  -liquid-rescale 50x50%\!  /tmp/'+str(pack['userid'])+'_out.jpg')
-	image_obj = Image.open('/tmp/'+str(pack['userid'])+'_out.jpg')
+	open('/mnt/tmpfs/'+str(pack['userid'])+'.jpg','wb').write(ret)
+	os.system('convert /mnt/tmpfs/'+str(pack['userid'])+'.jpg  -liquid-rescale 50x50%\!  /mnt/tmpfs/'+str(pack['userid'])+'_out.jpg')
+	image_obj = Image.open('/mnt/tmpfs/'+str(pack['userid'])+'_out.jpg')
 	imgByteArr = BytesIO()
 	image_obj = image_obj.resize(size)
 	image_obj.save(imgByteArr,format='PNG')
 	sendpic(imgByteArr.getvalue(),'Готово',pack['toho'])
+	os.system('rm /mnt/tmpfs/'+str(pack['userid'])+'_out.jpg')
+	os.system('rm /mnt/tmpfs/'+str(pack['userid'])+'.jpg')
 	image_obj.close()
 else:
 	apisay('Картинку сунуть забыл',pack['toho'])

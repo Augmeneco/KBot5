@@ -9,6 +9,6 @@ attachment = ''
 if len(items) != 0:
 	for item in items:
 		attachment += 'audio'+str(item['owner_id'])+'_'+str(item['id'])+','
-	apisay('Музыка по запросу вашему запросу',pack['toho'],attachment=attachment)
+	apisay('Музыка по вашему запросу',pack['toho'],attachment=attachment)
 else: apisay('Музыка по запросу не найдена :(',pack['toho'])
 
