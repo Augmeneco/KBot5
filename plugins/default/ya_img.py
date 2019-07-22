@@ -11,7 +11,11 @@ for img in index:
 	if success > 10:
 		break
 	img = etree.tostring(img).decode().lower()
-	img = re.findall('img_url=(.*).(png|jpg|jpeg)',img)[0]
+	img = re.findall('img_url=(.*).(png|jpg|jpeg)',img)
+	if len(img) == 0:
+		continue
+	else:
+		img = img[0]
 	try:
 		pic = requests.get(img[0].replace('%3a',':')+'.'+img[1]).content
 		if 'body' not in str(pic):
