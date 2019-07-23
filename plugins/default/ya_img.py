@@ -16,6 +16,7 @@ for img in index:
 		continue
 	else:
 		img = img[0]
+	if 'ytimg.com' in img[0]: continue
 	try:
 		pic = requests.get(img[0].replace('%3a',':')+'.'+img[1]).content
 		if 'body' not in str(pic):
