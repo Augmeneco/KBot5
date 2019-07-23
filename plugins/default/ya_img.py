@@ -1,7 +1,7 @@
 headers = {'User-Agent': 'Opera/9.80 (Android; Opera Mini/36.2.2254/119.132; U; id) Presto/2.12.423 Version/12.16'}
 proxies = {'http': 'socks5h://localhost:9050','https': 'socks5h://localhost:9050'}
 
-result = requests.get('https://yandex.ru/images/smart/search?p='+str(random.randint(0,99))+'&text='+pack['user_text'].replace(' ','+')+'&rpt=image_smart',headers=headers).text
+result = requests.get('https://yandex.ru/images/smart/search?p=0&text='+pack['user_text'].replace(' ','+')+'&rpt=image_smart',headers=headers).text
 
 index = html.fromstring(result)
 index = index.xpath('//a[@class="serp-item"]')
