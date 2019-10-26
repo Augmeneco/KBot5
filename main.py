@@ -32,7 +32,9 @@ def sendpic(pic,mess,toho,keyboard={"buttons":[],"one_time":True}):
 				
 def do_cmd(code,pack):
 	exec(code)
-			
+	
+def addlog(text):
+	print(datetime.datetime.today().strftime("%H:%M:%S")+' | ['+Fore.GREEN+'+'+Style.RESET_ALL+'] '+text)		
 for path in os.listdir('plugins'):
 	commands[path] = {}
 	if os.path.isdir('plugins/'+path):
@@ -43,24 +45,32 @@ uses_kb = 0
 start_time = time.monotonic()	
 longpoll = {}
 
+addlog('Инициализация завершена') 
+
 while True:
+	addlog('Вход в цикл') 
 	active = False
 	try:
+		addlog('Получение ответа от лонгполла') 
 		response = requests.post(lpb['server']+'?act=a_check&key='+lpb['key']+'&ts='+str(ts)+'&wait=25').json()
+		addlog('Ответ лонгполла: '+json.dumps(response)) 
 		ts = response['ts']
 	except Exception as error:	
+		addlog('Лонгполл вернул ошибку, по этому получаю новый сервер') 
 		if error == KeyboardInterrupt:
 			os._exit(0)
 		try:
 			lpb = requests.post('https://api.vk.com/method/groups.getLongPollServer',data={'access_token':config['group_token'],'v':'5.80','group_id':config['group_id']}).json()['response']
+			addlog('Сервер получен, результат вк: '+json.dumps(lpb))
 		except Exception as error:	
+			addlog('Произошла ошибка:'+str(error))
 			if error == KeyboardInterrupt:
 				os._exit(0)
 			continue
 			
 		ts = lpb['ts']
 		continue
-
+	addlog('Перехожу к этапу обработки сообщения')
 	for result in response['updates']:
 		longpoll[result['object']['from_id']] = result
 		text = result['object']['text']
@@ -87,6 +97,7 @@ while True:
 		if text.lower() == 'f' and result['object']['from_id'] > 0: apisay('F',result['object']['peer_id'],attachment='photo-158856938_457255856')
 		
 		if active:
+			addlog('Получена существующая команда, начинаю обработку текста')
 			toho = result['object']['peer_id']
 			userid = result['object']['from_id']
 			pack = {}
@@ -134,3 +145,4 @@ while True:
 				speak = requests.post('https://isinkin-bot-api.herokuapp.com/1/talk',data={'q':text.replace(text.split(' ')[0],'')}).json()
 				if 'text' in speak: apisay(speak['text'],toho)
 				else: apisay('Команда не найдена :(', toho)
+			addlog('Текст запроса прошёл по всем if')
