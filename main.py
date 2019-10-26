@@ -56,7 +56,7 @@ while True:
 		addlog('Ответ лонгполла: '+json.dumps(response)) 
 		ts = response['ts']
 	except Exception as error:	
-		addlog('Лонгполл вернул ошибку, по этому получаю новый сервер') 
+		addlog('Лонгполл вернул ошибку, по этому получаю новый сервер, ошибка: '+str(error)) 
 		if error == KeyboardInterrupt:
 			os._exit(0)
 		try:
